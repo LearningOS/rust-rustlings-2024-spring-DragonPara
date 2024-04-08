@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -29,13 +28,12 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::PartialOrd+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
-
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd+ Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,14 +67,50 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+    pub fn getT(&mut self, index: i32) -> Option<T> {
+        self.getT_ith_node(self.start, index)
+    }
+    fn getT_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<T> {
+        match node {
+            None => None,
+            Some(next_ptr) => match index {
+                0 => Some(unsafe { (*next_ptr.as_ptr()).val.clone() }),
+                _ => self.getT_ith_node(unsafe { (*next_ptr.as_ptr()).next }, index - 1),
+            },
+        }
+    }
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
+        let mut origin = Self {
             length: 0,
             start: None,
             end: None,
+        };
+        let mut i:i32 = 0;
+        let mut j:i32 = 0;
+        while (i as u32) < list_a.length && (j as u32)<list_b.length {
+            let left = list_a.getT(i).unwrap();
+            let right = list_b.getT(j).unwrap();
+            if left  < right{
+                origin.add(left);
+                i=i+1;
+            }
+            else{
+                origin.add(right);
+                j=j+1;
+            }
         }
+        while((i as u32) < list_a.length){
+            let left = list_a.getT(i).unwrap();
+            origin.add(left);
+            i=i+1;
+        }
+        while((j as u32) < list_b.length){
+            let left = list_b.getT(j).unwrap();
+            origin.add(left);
+            j=j+1;
+        }
+        return origin;
 	}
 }
 

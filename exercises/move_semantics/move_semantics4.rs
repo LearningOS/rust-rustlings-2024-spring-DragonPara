@@ -9,7 +9,7 @@
 
 
 static vec0:[i32;3] = [22, 44, 66];
-#[test]
+
 fn main() {
 
     let mut vec1 = fill_vec();
