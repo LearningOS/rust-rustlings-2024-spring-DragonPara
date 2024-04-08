@@ -31,7 +31,6 @@ enum ParsePersonError {
     ParseInt(ParseIntError),
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -56,8 +55,8 @@ impl FromStr for Person {
             return Err(ParsePersonError::Empty);
         }
         let items: Vec<&str> = s.split(",").collect();
-        println!("{:?}", items);
-        if items.len() < 2 {
+        // println!("{:?}", items);
+        if items.len() != 2 {
             return Err(ParsePersonError::BadLen);
         } else {
             let age_ = items[1].parse();
