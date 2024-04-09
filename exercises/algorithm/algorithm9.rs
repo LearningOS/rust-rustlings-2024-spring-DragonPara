@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,6 +36,24 @@ where
     }
 
     pub fn add(&mut self, value: T) {
+        self.items.push(value);
+        self.count += 1;
+        let mut pos = self.count;
+        if self.count == 1 {
+            return;
+        }
+        loop {
+            let pare = self.parent_idx(pos);
+            if pare == 0 {
+                return;
+            }
+            if (self.comparator)(&self.items[pare], &self.items[pos]) {
+                break;
+            } else {
+                self.items.swap(pare, pos);
+                pos = pare;
+            };
+        }
         //TODO
     }
 
@@ -58,7 +75,7 @@ where
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
         //TODO
-		0
+        0
     }
 }
 
@@ -85,7 +102,54 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+        if self.count == 0 {
+            return None;
+        } else {
+            self.items.swap(self.count,1);
+            let res = self.items.pop();
+            self.count -= 1;
+            if self.count <= 1{
+                return res;
+            }
+            let mut pos = 1;
+            loop{
+                let lindex = self.left_child_idx(pos);
+                let rindex = self.right_child_idx(pos);
+                if rindex <= self.count{
+                    if (self.comparator)(&self.items[lindex],&self.items[rindex]){
+                        if (self.comparator)(&self.items[lindex],&self.items[pos]){
+                            self.items.swap(lindex,pos);
+                            pos = lindex;
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                    else{
+                        if (self.comparator)(&self.items[rindex],&self.items[pos]){
+                            self.items.swap(rindex,pos);
+                            pos = rindex;
+                        }
+                        else{
+                            break;
+                        }
+                    }
+                }
+                else if lindex<=self.count{
+                    if (self.comparator)(&self.items[lindex],&self.items[pos]){
+                        self.items.swap(lindex,pos);
+                        pos = lindex;
+                    }
+                    else{
+                        break;
+                    }
+                }
+                else{
+                    break;
+                }
+            }
+            return res;
+        }
     }
 }
 
@@ -129,6 +193,7 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+        println!("{:?}", heap.items);
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(2));
         assert_eq!(heap.next(), Some(4));
@@ -144,6 +209,7 @@ mod tests {
         heap.add(2);
         heap.add(9);
         heap.add(11);
+        println!("{:?}", heap.items);
         assert_eq!(heap.len(), 4);
         assert_eq!(heap.next(), Some(11));
         assert_eq!(heap.next(), Some(9));
